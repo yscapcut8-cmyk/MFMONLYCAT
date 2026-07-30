@@ -34,25 +34,24 @@ router.post('/', (req, res) => {
             console.warn('Webhook recebido mas WEBHOOK_SECRET ou assinatura ausente. Processando mesmo assim (apenas para teste).');
         }
 
-        // Try to find the amount in the payload
         const payload = req.body;
-        
-        // Some platforms send { event: 'Pagamento Aprovado', data: { value: 100 } }
-        // Let's do a loose extraction
+        // Extract amount from specific platform payload
         let amount = 0;
-        if (payload.amount) amount = parseFloat(payload.amount);
-        else if (payload.value) amount = parseFloat(payload.value);
-        else if (payload.valor) amount = parseFloat(payload.valor);
+        if (payload.data && payload.data.transaction && payload.data.transaction.amount) {
+            amount = parseFloat(payload.data.transaction.amount);
+        } else if (payload.amount) amount = parseFloat(payload.amount);
         else if (payload.data && payload.data.amount) amount = parseFloat(payload.data.amount);
-        else if (payload.data && payload.data.value) amount = parseFloat(payload.data.value);
-        else if (payload.data && payload.data.valor) amount = parseFloat(payload.data.valor);
+        else if (payload.value) amount = parseFloat(payload.value);
 
         // Try to get a description or product name
         let description = 'Venda Automática (Webhook)';
-        if (payload.product) description = `Venda: ${payload.product}`;
-        else if (payload.produto) description = `Venda: ${payload.produto}`;
+        if (payload.data && payload.data.transaction && payload.data.transaction.plan_name) {
+            description = `Venda: ${payload.data.transaction.plan_name}`;
+            if (payload.data.flow && payload.data.flow.name) {
+                description += ` (Fluxo: ${payload.data.flow.name})`;
+            }
+        } else if (payload.product) description = `Venda: ${payload.product}`;
         else if (payload.data && payload.data.product) description = `Venda: ${payload.data.product}`;
-        else if (payload.data && payload.data.produto) description = `Venda: ${payload.data.produto}`;
 
         // Ensure amount is valid
         if (isNaN(amount) || amount <= 0) {
