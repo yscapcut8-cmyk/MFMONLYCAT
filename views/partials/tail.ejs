@@ -1,9 +1,33 @@
-            </div> <!-- End of content-wrapper -->
-        </main>
-    </div> <!-- End of app-container -->
+        </div><!-- end content-wrapper -->
+    </main>
+</div><!-- end app-container -->
 
-    <script>
-        lucide.createIcons();
-    </script>
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="document.querySelector('.sidebar').classList.remove('open'); this.classList.remove('active');"></div>
+
+<script>
+    lucide.createIcons();
+
+    // Mobile sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        });
+    }
+
+    // Auto-dismiss alerts
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-8px)';
+            setTimeout(() => alert.remove(), 300);
+        }, 4000);
+    });
+</script>
 </body>
 </html>

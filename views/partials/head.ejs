@@ -4,37 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title : 'MoneyFinance' %></title>
-    <link rel="stylesheet" href="/css/style.css">
-    <!-- Google Fonts -->
+    <meta name="description" content="MoneyFinance — Gestão financeira para sócios">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
-<body class="bg-dark text-light font-inter">
+<body>
+<div class="app-container">
+    <% if (user) { %>
+        <%- include('sidebar') %>
+    <% } %>
 
-    <div class="app-container">
+    <main class="main-content <%= user ? '' : 'no-sidebar' %>">
         <% if (user) { %>
-            <%- include('sidebar') %>
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+                    <i data-lucide="menu"></i>
+                </button>
+                <span class="topbar-title"><%= typeof title !== 'undefined' ? title.split(' - ')[0] : 'MoneyFinance' %></span>
+            </div>
+            <div class="topbar-right">
+                <div class="user-chip-header">
+                    <div class="user-chip-avatar-sm"><%= user.name.charAt(0).toUpperCase() %></div>
+                    <span class="user-chip-name-sm"><%= user.name %></span>
+                    <% if (user.role === 'admin') { %><span class="admin-badge">Admin</span><% } %>
+                </div>
+                <a href="/logout" class="topbar-logout" title="Sair">
+                    <i data-lucide="log-out"></i>
+                </a>
+            </div>
+        </header>
         <% } %>
-        
-        <main class="main-content">
-            <% if (user) { %>
-                <%- include('header') %>
-            <% } %>
 
-            <div class="content-wrapper">
-                <% if (typeof error !== 'undefined' && error) { %>
-                    <div class="alert alert-error">
-                        <i data-lucide="alert-circle"></i>
-                        <span><%= error %></span>
-                    </div>
-                <% } %>
-                
-                <% if (typeof success !== 'undefined' && success) { %>
-                    <div class="alert alert-success">
-                        <i data-lucide="check-circle"></i>
-                        <span><%= success %></span>
-                    </div>
-                <% } %>
+        <div class="content-wrapper">
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <i data-lucide="alert-circle"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success">
+                    <i data-lucide="check-circle-2"></i>
+                    <span><%= success %></span>
+                </div>
+            <% } %>

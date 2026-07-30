@@ -1,56 +1,62 @@
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <i data-lucide="wallet" class="brand-icon"></i>
-        <h2>MoneyFinance</h2>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">M</div>
+        <div>
+            <div class="logo-text">MoneyFinance</div>
+            <div style="font-size: 0.65rem; color: var(--text-dim); margin-top: 1px;">Gestão Societária</div>
+        </div>
     </div>
-    
+
     <nav class="sidebar-nav">
+        <div class="nav-section-label">Menu</div>
         <ul class="nav-list">
             <li class="nav-item">
-                <a href="/" class="nav-link">
+                <a href="/" class="nav-link <%= typeof title !== 'undefined' && title.includes('Dashboard') ? 'active' : '' %>">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/transactions" class="nav-link">
+                <a href="/transactions" class="nav-link <%= typeof title !== 'undefined' && title.includes('Transaç') ? 'active' : '' %>">
                     <i data-lucide="arrow-left-right"></i>
-                    <span>Transações (Gerais)</span>
+                    <span>Transações</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/company" class="nav-link">
-                    <i data-lucide="building"></i>
+                <a href="/company" class="nav-link <%= typeof title !== 'undefined' && title.includes('Caixa') ? 'active' : '' %>">
+                    <i data-lucide="building-2"></i>
                     <span>Caixa da Empresa</span>
                 </a>
             </li>
+
+            <div class="nav-section-label" style="margin-top: var(--sp-4);">Configurações</div>
             <li class="nav-item">
-                <a href="/settings" class="nav-link">
-                    <i data-lucide="settings"></i>
-                    <span>Configurações (% Divisão)</span>
+                <a href="/settings" class="nav-link <%= typeof title !== 'undefined' && title.includes('Configura') ? 'active' : '' %>">
+                    <i data-lucide="sliders-horizontal"></i>
+                    <span>Divisão de %</span>
                 </a>
             </li>
+            <% if (user && user.role === 'admin') { %>
             <li class="nav-item">
-                <a href="/calculator" class="nav-link">
-                    <i data-lucide="percent"></i>
-                    <span>Calculadora de %</span>
-                </a>
-            </li>
-            <% if (user.role === 'admin') { %>
-            <li class="nav-item">
-                <a href="/users" class="nav-link">
-                    <i data-lucide="users"></i>
-                    <span>Acessos (Admin)</span>
+                <a href="/users" class="nav-link <%= typeof title !== 'undefined' && title.includes('Acessos') ? 'active' : '' %>">
+                    <i data-lucide="shield-check"></i>
+                    <span>Acessos</span>
                 </a>
             </li>
             <% } %>
         </ul>
     </nav>
-    
+
     <div class="sidebar-footer">
-        <a href="/logout" class="nav-link text-danger">
-            <i data-lucide="log-out"></i>
-            <span>Sair</span>
-        </a>
+        <div class="user-chip">
+            <div class="user-chip-avatar"><%= user ? user.name.charAt(0).toUpperCase() : '?' %></div>
+            <div style="flex: 1; overflow: hidden;">
+                <div class="user-chip-name"><%= user ? user.name : '' %></div>
+                <div class="user-chip-role"><%= user && user.role === 'admin' ? '👑 Administrador' : 'Sócio' %></div>
+            </div>
+            <a href="/logout" class="user-chip-logout" title="Sair">
+                <i data-lucide="log-out" style="width: 16px; height: 16px; color: var(--text-muted);"></i>
+            </a>
+        </div>
     </div>
 </aside>
