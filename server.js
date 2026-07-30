@@ -31,6 +31,7 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.error = req.session.error || null;
   res.locals.success = req.session.success || null;
+  res.locals.process = process; // Allow EJS to access process.env
   delete req.session.error;
   delete req.session.success;
   

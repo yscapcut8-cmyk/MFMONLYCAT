@@ -40,6 +40,22 @@
 
         <div class="content-wrapper">
             <!-- Global Notifications -->
+            <% if (typeof process !== 'undefined' && process.env.RAILWAY_ENVIRONMENT && user && user.role === 'admin' && !process.env.VOLUME_ACKNOWLEDGED) { %>
+                <div class="alert alert-railway" style="margin-bottom: var(--sp-6);">
+                    <i data-lucide="alert-triangle"></i>
+                    <div>
+                        <strong>ATENÇÃO (Apenas Admin): SEUS DADOS ESTÃO SENDO APAGADOS?</strong>
+                        <p style="margin-top: 4px; font-size: 0.85rem; color: #fca5a5;">
+                            Se toda vez que o app atualiza os dados somem, é porque você não adicionou um <b>Volume</b> no Railway.<br>
+                            1. Vá no painel do Railway do seu projeto.<br>
+                            2. Clique na aba <b>Volumes</b> e clique em "New Volume".<br>
+                            3. Defina o <b>Mount Path</b> como <code>/data</code> e aplique.<br>
+                            <i>Para sumir com este aviso, adicione a variável de ambiente <code>VOLUME_ACKNOWLEDGED=true</code> no Railway.</i>
+                        </p>
+                    </div>
+                </div>
+            <% } %>
+
             <% if (typeof upcomingRenewals !== 'undefined' && upcomingRenewals.length > 0) { %>
                 <div class="alert alert-warning" style="margin-bottom: var(--sp-6);">
                     <i data-lucide="alert-triangle"></i>
