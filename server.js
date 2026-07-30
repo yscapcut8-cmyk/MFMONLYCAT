@@ -36,6 +36,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check (required for Railway)
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 // Routes
 app.use('/', require('./routes/indexRoutes'));
 app.use('/', require('./routes/authRoutes'));
@@ -45,6 +48,6 @@ app.use('/company', require('./routes/companyRoutes'));
 app.use('/users', require('./routes/userRoutes'));
 app.use('/calculator', require('./routes/calculatorRoutes'));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
