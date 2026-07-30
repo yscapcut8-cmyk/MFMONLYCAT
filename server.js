@@ -15,6 +15,10 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Webhook route must be registered BEFORE global express.json() so it can access the raw body for signature validation
+app.use('/webhook', require('./routes/webhookRoutes'));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

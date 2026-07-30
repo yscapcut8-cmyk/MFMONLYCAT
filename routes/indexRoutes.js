@@ -11,6 +11,11 @@ router.get('/', ensureAuthenticated, (req, res) => {
     const faturamento = incomeStmt.get().total;
     const custosGerais = expenseStmt.get().total;
     
+    // Faturamento de Hoje (Webhook e Manual)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayIncomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income' AND date = ?");
+    const faturamentoHoje = todayIncomeStmt.get(todayStr).total;
+    
     // Buscar configurações de porcentagem
     const settingsStmt = db.prepare('SELECT * FROM settings WHERE id = 1');
     const settings = settingsStmt.get();
@@ -50,6 +55,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
     res.render('dashboard', {
       title: 'Dashboard - MoneyFinance',
       faturamento,
+      faturamentoHoje,
       custosGerais,
       lucroADividir,
       ortizShare,
