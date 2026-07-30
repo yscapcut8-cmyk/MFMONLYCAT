@@ -1,45 +1,110 @@
-<%- include('../partials/head') %>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta — MoneyFinance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
 
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <i data-lucide="wallet" class="brand-icon-lg text-primary"></i>
-            <h2>Crie sua conta</h2>
-            <p>Junte-se ao seu sócio no MoneyFinance.</p>
+<div class="auth-split">
+    <!-- LEFT PANEL — Brand -->
+    <div class="auth-panel-left">
+        <div class="auth-brand">
+            <div class="logo-icon" style="width: 52px; height: 52px; font-size: 1.4rem;">M</div>
+            <div class="auth-brand-text">
+                <div class="logo-text" style="font-size: 1.5rem;">MoneyFinance</div>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-top: 4px;">Gestão Financeira Societária</div>
+            </div>
         </div>
-        
-        <form action="/register" method="POST" class="auth-form">
-            <div class="form-group">
-                <label for="name">Nome completo</label>
-                <div class="input-with-icon">
-                    <i data-lucide="user"></i>
-                    <input type="text" id="name" name="name" required placeholder="Seu nome">
+
+        <div class="auth-features">
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="users"></i></div>
+                <div>
+                    <strong>Múltiplos Sócios</strong>
+                    <p>Cada sócio tem sua própria conta com acesso ao painel</p>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <div class="input-with-icon">
-                    <i data-lucide="mail"></i>
-                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="trending-up"></i></div>
+                <div>
+                    <strong>Faturamento em Tempo Real</strong>
+                    <p>Registre entradas e saídas e acompanhe os resultados</p>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <div class="input-with-icon">
-                    <i data-lucide="lock"></i>
-                    <input type="password" id="password" name="password" required placeholder="••••••••">
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="lock"></i></div>
+                <div>
+                    <strong>Dados Seguros</strong>
+                    <p>Acesso com senha criptografada e sessão protegida</p>
                 </div>
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-block mt-4">Criar conta</button>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+        </div>
+
+        <div class="auth-panel-bottom">
+            <span>© 2026 MoneyFinance</span>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL — Form -->
+    <div class="auth-panel-right">
+        <div class="auth-form-wrap">
+            <div class="auth-form-header">
+                <h1>Criar sua conta</h1>
+                <p>Preencha os dados abaixo para se cadastrar no sistema.</p>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+                    <i data-lucide="alert-circle"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="name">Nome completo</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="name" name="name" required placeholder="Seu nome" autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="mail"></i>
+                        <input type="email" id="email" name="email" required placeholder="seu@email.com" autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="password" name="password" required placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.75rem; height: 48px; font-size: 1rem;">
+                    <i data-lucide="user-plus"></i>
+                    Criar conta
+                </button>
+            </form>
+
+            <div class="auth-form-footer">
+                <p>Já tem uma conta? <a href="/login">Fazer login</a></p>
+            </div>
         </div>
     </div>
 </div>
 
-<%- include('../partials/tail') %>
+<script>lucide.createIcons();</script>
+</body>
+</html>

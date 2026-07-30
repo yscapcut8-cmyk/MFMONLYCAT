@@ -2,31 +2,35 @@
     </main>
 </div><!-- end app-container -->
 
-<!-- Overlay for mobile -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="document.querySelector('.sidebar').classList.remove('open'); this.classList.remove('active');"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <script>
     lucide.createIcons();
 
-    // Mobile sidebar toggle
-    const menuToggle = document.getElementById('menuToggle');
+    // Mobile sidebar
+    const menuBtn = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        });
+    
+    function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
     }
+    function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+    }
+    if (menuBtn) menuBtn.addEventListener('click', openSidebar);
+    if (overlay) overlay.addEventListener('click', closeSidebar);
 
     // Auto-dismiss alerts
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
+    document.querySelectorAll('.alert').forEach(alert => {
         setTimeout(() => {
+            alert.style.transition = 'opacity 0.3s, transform 0.3s';
             alert.style.opacity = '0';
             alert.style.transform = 'translateY(-8px)';
             setTimeout(() => alert.remove(), 300);
-        }, 4000);
+        }, 4500);
     });
 </script>
 </body>

@@ -1,42 +1,102 @@
-<%- include('../partials/head') %>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar — MoneyFinance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
 
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-header">
-            <div class="auth-logo">
-                <div class="logo-icon" style="width: 48px; height: 48px; font-size: 1.25rem; margin: 0 auto 1rem;">M</div>
-                <h2>MoneyFinance</h2>
-                <p>Entre na sua conta para continuar</p>
+<div class="auth-split">
+    <!-- LEFT PANEL — Brand -->
+    <div class="auth-panel-left">
+        <div class="auth-brand">
+            <div class="logo-icon" style="width: 52px; height: 52px; font-size: 1.4rem;">M</div>
+            <div class="auth-brand-text">
+                <div class="logo-text" style="font-size: 1.5rem;">MoneyFinance</div>
+                <div style="color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-top: 4px;">Gestão Financeira Societária</div>
             </div>
         </div>
 
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <div class="input-with-icon">
-                    <i data-lucide="mail"></i>
-                    <input type="email" id="email" name="email" required placeholder="seu@email.com">
+        <div class="auth-features">
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="pie-chart"></i></div>
+                <div>
+                    <strong>Divisão Automática</strong>
+                    <p>Lucros divididos em porcentagens personalizadas entre os sócios</p>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <div class="input-with-icon">
-                    <i data-lucide="lock"></i>
-                    <input type="password" id="password" name="password" required placeholder="••••••••">
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="building-2"></i></div>
+                <div>
+                    <strong>Caixa da Empresa</strong>
+                    <p>Controle de ferramentas, assinaturas e aportes separados</p>
                 </div>
             </div>
+            <div class="auth-feature-item">
+                <div class="auth-feature-icon"><i data-lucide="shield-check"></i></div>
+                <div>
+                    <strong>Controle de Acesso</strong>
+                    <p>Permissões de administrador para ações críticas</p>
+                </div>
+            </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem;">
-                <i data-lucide="log-in"></i>
-                Entrar
-            </button>
-        </form>
+        <div class="auth-panel-bottom">
+            <span>© 2026 MoneyFinance</span>
+        </div>
+    </div>
 
-        <div class="auth-footer">
-            <p>Novo por aqui? <a href="/register">Criar conta</a></p>
+    <!-- RIGHT PANEL — Form -->
+    <div class="auth-panel-right">
+        <div class="auth-form-wrap">
+            <div class="auth-form-header">
+                <h1>Bem-vindo de volta</h1>
+                <p>Entre com suas credenciais para acessar o painel.</p>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+                    <i data-lucide="alert-circle"></i>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="mail"></i>
+                        <input type="email" id="email" name="email" required placeholder="seu@email.com" autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-with-icon">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.75rem; height: 48px; font-size: 1rem;">
+                    <i data-lucide="log-in"></i>
+                    Entrar no painel
+                </button>
+            </form>
+
+            <div class="auth-form-footer">
+                <p>Ainda não tem conta? <a href="/register">Cadastre-se</a></p>
+            </div>
         </div>
     </div>
 </div>
 
-<%- include('../partials/tail') %>
+<script>lucide.createIcons();</script>
+</body>
+</html>

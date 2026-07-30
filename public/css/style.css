@@ -585,8 +585,145 @@ h1,h2,h3,h4,h5,h6 { color: var(--text-light); font-weight: 600; line-height: 1.3
 .calc-warning.hidden { display: none; }
 
 /* ==========================================================================
-   Auth Pages
+   Auth Pages — Split Screen
    ========================================================================== */
+.auth-split {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left Panel */
+.auth-panel-left {
+    width: 420px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #0a1628 0%, #060c1a 60%, #091220 100%);
+    border-right: 1px solid rgba(0, 212, 170, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: var(--sp-8);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-panel-left::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,170,0.07) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.auth-panel-left::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    margin-bottom: auto;
+}
+
+.auth-brand-text { }
+
+.auth-features {
+    margin: var(--sp-8) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+}
+
+.auth-feature-item {
+    display: flex;
+    gap: var(--sp-4);
+    align-items: flex-start;
+}
+
+.auth-feature-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--primary-dim);
+    border: 1px solid var(--border-active);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.auth-feature-icon i { width: 18px; height: 18px; }
+
+.auth-feature-item strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 2px;
+}
+
+.auth-feature-item p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.auth-panel-bottom {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: auto;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--border);
+}
+
+/* Right Panel */
+.auth-panel-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-8);
+    background: var(--bg-base);
+}
+
+.auth-form-wrap {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-form-header {
+    margin-bottom: var(--sp-8);
+}
+
+.auth-form-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--sp-2);
+    background: linear-gradient(135deg, var(--text-light), rgba(240,244,255,0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-form-header p {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+}
+
+.auth-form-footer {
+    margin-top: var(--sp-6);
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Old classes kept for compatibility */
 .auth-page {
     min-height: 100vh;
     display: flex;
@@ -608,6 +745,7 @@ h1,h2,h3,h4,h5,h6 { color: var(--text-light); font-weight: 600; line-height: 1.3
 .auth-header { text-align: center; margin-bottom: var(--sp-8); }
 .auth-header p { color: var(--text-muted); margin-top: var(--sp-2); }
 .auth-footer { margin-top: var(--sp-6); text-align: center; color: var(--text-muted); }
+
 
 /* ==========================================================================
    Buttons
@@ -876,5 +1014,22 @@ input::placeholder { color: var(--text-dim); }
     .split-partner-row { flex-direction: column; align-items: stretch; }
     .split-partner-result { min-width: unset; }
     .auth-card { padding: var(--sp-6); }
+    .auth-form-wrap { padding: var(--sp-2); }
+    .auth-form-header h1 { font-size: 1.4rem; }
 }
+
+/* Auth split — hide left panel on mobile */
+@media (max-width: 768px) {
+    .auth-split { flex-direction: column; }
+    .auth-panel-left {
+        width: 100%;
+        padding: var(--sp-6);
+        min-height: unset;
+    }
+    .auth-features { display: none; }
+    .auth-panel-bottom { display: none; }
+    .auth-brand { margin-bottom: 0; }
+    .auth-panel-right { padding: var(--sp-6); }
+}
+
 
