@@ -22,27 +22,53 @@
                             <td><strong><%= u.name %></strong></td>
                             <td><%= u.email %></td>
                             <td>
-                                <% if (u.role === 'admin') { %>
-                                    <span class="badge badge-success"><i data-lucide="shield" style="width: 12px; margin-right: 4px;"></i> Admin</span>
-                                <% } else { %>
-                                    <span class="badge badge-outline"><i data-lucide="user" style="width: 12px; margin-right: 4px;"></i> Usuário</span>
-                                <% } %>
+                                <div style="display: flex; gap: 8px;">
+                                    <% if (u.status === 'approved') { %>
+                                        <span class="badge badge-success"><i data-lucide="check-circle" style="width: 12px; margin-right: 4px;"></i> Aprovado</span>
+                                    <% } else { %>
+                                        <span class="badge" style="background: rgba(255, 170, 0, 0.1); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.2);"><i data-lucide="clock" style="width: 12px; margin-right: 4px;"></i> Pendente</span>
+                                    <% } %>
+
+                                    <% if (u.role === 'admin') { %>
+                                        <span class="badge badge-primary"><i data-lucide="shield" style="width: 12px; margin-right: 4px;"></i> Admin</span>
+                                    <% } else { %>
+                                        <span class="badge badge-outline"><i data-lucide="user" style="width: 12px; margin-right: 4px;"></i> Usuário</span>
+                                    <% } %>
+                                </div>
                             </td>
                             <td class="text-right">
                                 <% if (user.id !== u.id) { %>
-                                    <form action="/users/<%= u.id %>/role" method="POST" class="inline-form">
-                                        <% if (u.role === 'admin') { %>
-                                            <input type="hidden" name="role" value="user">
-                                            <button type="submit" class="btn btn-sm btn-outline" title="Rebaixar para Usuário normal">
-                                                Remover Admin
-                                            </button>
-                                        <% } else { %>
-                                            <input type="hidden" name="role" value="admin">
-                                            <button type="submit" class="btn btn-sm btn-primary" title="Promover a Administrador">
-                                                Aprovar como Admin
-                                            </button>
-                                        <% } %>
-                                    </form>
+                                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                        <!-- Form to Approve/Block -->
+                                        <form action="/users/<%= u.id %>/status" method="POST" class="inline-form">
+                                            <% if (u.status === 'approved') { %>
+                                                <input type="hidden" name="status" value="pending">
+                                                <button type="submit" class="btn btn-sm" style="background: rgba(255, 92, 92, 0.1); color: var(--danger); border: 1px solid var(--border-active);" title="Bloquear Acesso">
+                                                    Bloquear Acesso
+                                                </button>
+                                            <% } else { %>
+                                                <input type="hidden" name="status" value="approved">
+                                                <button type="submit" class="btn btn-sm btn-success" title="Aprovar Acesso">
+                                                    Aprovar Acesso
+                                                </button>
+                                            <% } %>
+                                        </form>
+
+                                        <!-- Form to change Role -->
+                                        <form action="/users/<%= u.id %>/role" method="POST" class="inline-form">
+                                            <% if (u.role === 'admin') { %>
+                                                <input type="hidden" name="role" value="user">
+                                                <button type="submit" class="btn btn-sm btn-outline" title="Tirar poder de Admin">
+                                                    Remover Admin
+                                                </button>
+                                            <% } else { %>
+                                                <input type="hidden" name="role" value="admin">
+                                                <button type="submit" class="btn btn-sm btn-outline" title="Dar poder de Admin">
+                                                    Tornar Admin
+                                                </button>
+                                            <% } %>
+                                        </form>
+                                    </div>
                                 <% } else { %>
                                     <span class="text-muted" style="font-size: 0.8rem;">(Você)</span>
                                 <% } %>

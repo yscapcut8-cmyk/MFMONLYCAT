@@ -10,7 +10,7 @@ router.use(ensureAdmin);
 // Listar todos os usuários
 router.get('/', (req, res) => {
   try {
-    const stmt = db.prepare('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
+    const stmt = db.prepare('SELECT id, name, email, role, status, created_at FROM users ORDER BY created_at DESC');
     const users = stmt.all();
     res.render('users/index', { title: 'Gestão de Acessos - MoneyFinance', users });
   } catch (err) {
@@ -38,6 +38,29 @@ router.post('/:id/role', (req, res) => {
   } catch (err) {
     console.error(err);
     req.session.error = 'Erro ao atualizar permissão';
+    res.redirect('/users');
+  }
+});
+
+// Aprovar ou bloquear usuário (alterar status)
+router.post('/:id/status', (req, res) => {
+  const { status } = req.body;
+  const targetId = req.params.id;
+
+  // Evita que o admin bloqueie a si mesmo
+  if (req.session.user.id == targetId && status !== 'approved') {
+    req.session.error = 'Você não pode bloquear seu próprio acesso.';
+    return res.redirect('/users');
+  }
+
+  try {
+    const stmt = db.prepare('UPDATE users SET status = ? WHERE id = ?');
+    stmt.run(status, targetId);
+    req.session.success = 'Status do usuário atualizado!';
+    res.redirect('/users');
+  } catch (err) {
+    console.error(err);
+    req.session.error = 'Erro ao atualizar status';
     res.redirect('/users');
   }
 });

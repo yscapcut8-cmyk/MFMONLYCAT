@@ -8,6 +8,7 @@ function initDb() {
       email TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       role TEXT DEFAULT 'user',
+      status TEXT DEFAULT 'pending',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -50,6 +51,20 @@ function initDb() {
     
     INSERT OR IGNORE INTO settings (id, company_pct, ortiz_pct, davi_pct) VALUES (1, 10, 45, 45);
   `);
+  
+  // Migration for adding status column to existing db
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'pending'");
+    // Since this is executed, it means we just added the column to an existing db
+    // Let's set existing users to 'approved' to avoid locking out existing ones, or just the admin.
+    db.exec("UPDATE users SET status = 'approved'");
+  } catch (e) {
+    // Column already exists, ignore
+  }
+
+  // Ensure admin is always approved
+  db.exec("UPDATE users SET status = 'approved' WHERE role = 'admin' OR email = 'yscapcut8@gmail.com'");
+
   console.log('Database initialized.');
 }
 

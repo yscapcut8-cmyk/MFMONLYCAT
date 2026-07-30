@@ -15,8 +15,13 @@ router.post('/login', ensureGuest, async (req, res) => {
     const user = stmt.get(email);
     
     if (user && await bcrypt.compare(password, user.password)) {
+      if (user.status !== 'approved') {
+        req.session.error = 'Sua conta ainda não foi aprovada pelo administrador. Aguarde a liberação para acessar o app.';
+        return res.redirect('/login');
+      }
+
       req.session.userId = user.id;
-      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
+      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role, status: user.status };
       res.redirect('/');
     } else {
       req.session.error = 'E-mail ou senha inválidos';
@@ -47,13 +52,20 @@ router.post('/register', ensureGuest, async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const role = email === 'yscapcut8@gmail.com' ? 'admin' : 'user';
-    const insertStmt = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
-    const result = insertStmt.run(name, email, hashedPassword, role);
+    const status = role === 'admin' ? 'approved' : 'pending';
+
+    const insertStmt = db.prepare('INSERT INTO users (name, email, password, role, status) VALUES (?, ?, ?, ?, ?)');
+    const result = insertStmt.run(name, email, hashedPassword, role, status);
     
-    // Auto-login
-    req.session.userId = result.lastInsertRowid;
-    req.session.user = { id: result.lastInsertRowid, name, email, role };
-    res.redirect('/');
+    if (status === 'approved') {
+      // Auto-login for admin
+      req.session.userId = result.lastInsertRowid;
+      req.session.user = { id: result.lastInsertRowid, name, email, role, status };
+      res.redirect('/');
+    } else {
+      req.session.success = 'Conta criada! Aguarde um administrador aprovar seu acesso.';
+      res.redirect('/login');
+    }
   } catch (err) {
     console.error(err);
     req.session.error = 'Erro ao criar conta';
