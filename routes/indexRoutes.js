@@ -4,6 +4,7 @@ const { ensureAuthenticated } = require('../middleware/auth');
 const router = express.Router();
 
 router.get('/', ensureAuthenticated, (req, res) => {
+  try {
     // Helper para pegar a data atual de São Paulo (UTC-3)
     const d = new Date();
     const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
