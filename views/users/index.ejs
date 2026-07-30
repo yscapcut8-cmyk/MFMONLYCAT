@@ -1,0 +1,58 @@
+<%- include('../partials/head') %>
+
+<div class="card glass-card max-w-4xl mx-auto">
+    <div class="card-header">
+        <h2>Gestão de Acessos</h2>
+        <p class="text-muted">Apenas administradores podem ver esta tela. Aqui você pode aprovar outros usuários promovendo-os a administradores, permitindo que eles também editem e resetem o caixa da empresa.</p>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Status / Nível</th>
+                        <th class="text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(u => { %>
+                        <tr>
+                            <td><strong><%= u.name %></strong></td>
+                            <td><%= u.email %></td>
+                            <td>
+                                <% if (u.role === 'admin') { %>
+                                    <span class="badge badge-success"><i data-lucide="shield" style="width: 12px; margin-right: 4px;"></i> Admin</span>
+                                <% } else { %>
+                                    <span class="badge badge-outline"><i data-lucide="user" style="width: 12px; margin-right: 4px;"></i> Usuário</span>
+                                <% } %>
+                            </td>
+                            <td class="text-right">
+                                <% if (user.id !== u.id) { %>
+                                    <form action="/users/<%= u.id %>/role" method="POST" class="inline-form">
+                                        <% if (u.role === 'admin') { %>
+                                            <input type="hidden" name="role" value="user">
+                                            <button type="submit" class="btn btn-sm btn-outline" title="Rebaixar para Usuário normal">
+                                                Remover Admin
+                                            </button>
+                                        <% } else { %>
+                                            <input type="hidden" name="role" value="admin">
+                                            <button type="submit" class="btn btn-sm btn-primary" title="Promover a Administrador">
+                                                Aprovar como Admin
+                                            </button>
+                                        <% } %>
+                                    </form>
+                                <% } else { %>
+                                    <span class="text-muted" style="font-size: 0.8rem;">(Você)</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/tail') %>

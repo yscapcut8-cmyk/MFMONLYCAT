@@ -1,0 +1,71 @@
+<%- include('../partials/head') %>
+
+<div class="card glass-card">
+    <div class="card-header flex-between">
+        <h2>Todas as Transações</h2>
+        <a href="/transactions/new" class="btn btn-primary">
+            <i data-lucide="plus"></i> Nova Transação
+        </a>
+    </div>
+    <div class="card-body">
+        <% if (transactions.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Sócio</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th class="text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% transactions.forEach(t => { %>
+                            <tr>
+                                <td><%= new Date(t.date).toLocaleDateString('pt-BR') %></td>
+                                <td><strong><%= t.description %></strong></td>
+                                <td>
+                                    <div class="badge badge-outline">
+                                        <i data-lucide="user" class="icon-sm"></i> <%= t.user_name %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% if (t.type === 'income') { %>
+                                        <span class="badge badge-success">Entrada</span>
+                                    <% } else { %>
+                                        <span class="badge badge-danger">Saída</span>
+                                    <% } %>
+                                </td>
+                                <td class="<%= t.type === 'income' ? 'text-success' : 'text-danger' %> font-medium">
+                                    <%= t.type === 'income' ? '+' : '-' %> R$ <%= t.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %>
+                                </td>
+                                <td class="text-right">
+                                    <div class="action-buttons">
+                                        <a href="/transactions/<%= t.id %>/edit" class="btn btn-sm btn-icon btn-outline" title="Editar">
+                                            <i data-lucide="edit-2"></i>
+                                        </a>
+                                        <form action="/transactions/<%= t.id %>/delete" method="POST" class="inline-form" onsubmit="return confirm('Tem certeza que deseja excluir esta transação?');">
+                                            <button type="submit" class="btn btn-sm btn-icon btn-danger-outline" title="Excluir">
+                                                <i data-lucide="trash-2"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i data-lucide="wallet"></i>
+                <p>O caixa está vazio. Comece registrando suas finanças.</p>
+                <a href="/transactions/new" class="btn btn-primary mt-4">Criar primeira transação</a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../partials/tail') %>

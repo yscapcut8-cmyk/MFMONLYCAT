@@ -1,0 +1,165 @@
+<%- include('../partials/head') %>
+
+<div class="dashboard-grid mb-6">
+    <div class="stat-card" style="background: rgba(16, 185, 129, 0.05);">
+        <div class="stat-header">
+            <h3>Caixa Real da Empresa</h3>
+            <div class="icon-box primary">
+                <i data-lucide="building"></i>
+            </div>
+        </div>
+        <div class="stat-value <%= companyFund >= 0 ? 'text-primary' : 'text-danger' %>">
+            R$ <%= companyFund.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %>
+        </div>
+        <div class="stat-subtitle mt-2">
+            Base teórica: R$ <%= theoreticalCompanyFund.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Nova Movimentação Manual no Caixa da Empresa -->
+    <div class="card glass-card">
+        <div class="card-header">
+            <h3>Ajuste Manual do Caixa</h3>
+            <p class="text-muted" style="font-size: 0.875rem;">Adicione aportes ou retiradas exclusivas do fundo da empresa.</p>
+        </div>
+        <div class="card-body">
+            <form action="/company/ledger" method="POST">
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <input type="text" name="description" required placeholder="Ex: Aporte dos sócios">
+                </div>
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label>Valor (R$)</label>
+                        <input type="number" name="amount" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group half-width">
+                        <label>Data</label>
+                        <input type="date" name="date" required value="<%= new Date().toISOString().split('T')[0] %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <div class="radio-group">
+                        <label class="radio-card income-radio" style="flex: 1;">
+                            <input type="radio" name="type" value="income" required checked>
+                            <div class="radio-content" style="padding: 0.5rem; text-align: center;">
+                                <span><i data-lucide="plus" style="width: 16px;"></i> Aporte</span>
+                            </div>
+                        </label>
+                        <label class="radio-card expense-radio" style="flex: 1;">
+                            <input type="radio" name="type" value="expense" required>
+                            <div class="radio-content" style="padding: 0.5rem; text-align: center;">
+                                <span><i data-lucide="minus" style="width: 16px;"></i> Retirada</span>
+                            </div>
+                        </label>
+                        <label class="radio-card" style="flex: 1;">
+                            <input type="radio" name="type" value="set_balance" required>
+                            <div class="radio-content" style="padding: 0.5rem; text-align: center; border-color: var(--primary);">
+                                <span><i data-lucide="edit-2" style="width: 16px;"></i> Sobrescrever</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-4 btn-block">Aplicar no Caixa da Empresa</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assinaturas de Ferramentas -->
+    <div class="card glass-card">
+        <div class="card-header">
+            <h3>Assinaturas de Ferramentas</h3>
+            <p class="text-muted" style="font-size: 0.875rem;">Ferramentas que descontam automaticamente do caixa da empresa.</p>
+        </div>
+        <div class="card-body">
+            <form action="/company/subscriptions" method="POST" class="mb-6 flex" style="flex-wrap: wrap; gap: 8px;">
+                <input type="text" name="name" required placeholder="Nome (ex: ChatGPT)" style="flex: 1; min-width: 140px;">
+                <input type="number" name="amount" step="0.01" min="0.01" required placeholder="Valor (R$)" style="flex: 1; min-width: 100px;">
+                <input type="date" name="date" required value="<%= new Date().toISOString().split('T')[0] %>" style="flex: 1; min-width: 120px;" title="Data do primeiro pagamento">
+                <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 100px;">Adicionar</button>
+            </form>
+
+            <% if (subscriptions.length > 0) { %>
+                <ul class="nav-list">
+                    <% subscriptions.forEach(sub => { %>
+                        <li class="nav-link" style="justify-content: space-between; background: rgba(255,255,255,0.02); margin-bottom: 4px;">
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <i data-lucide="box" class="text-primary"></i>
+                                <span><%= sub.name %></span>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <span class="text-danger">- R$ <%= sub.amount.toFixed(2) %>/mês</span>
+                                <form action="/company/subscriptions/<%= sub.id %>/cancel" method="POST" class="inline-form" onsubmit="return confirm('Cancelar assinatura? O histórico não será apagado, mas ela ficará inativa.');">
+                                    <button type="submit" class="btn btn-sm btn-icon btn-danger-outline" title="Cancelar Assinatura">
+                                        <i data-lucide="x"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p class="text-muted text-center py-4">Nenhuma assinatura ativa.</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<div class="mt-6">
+    <div class="card glass-card">
+        <div class="card-header flex-between">
+            <h3>Extrato do Caixa da Empresa</h3>
+            <% if (user.role === 'admin') { %>
+            <form action="/company/ledger/reset" method="POST" class="inline-form" onsubmit="return confirm('ATENÇÃO: Você tem certeza que deseja apagar todo o histórico deste extrato? O saldo do caixa da empresa voltará a ser baseado apenas na porcentagem teórica (até que você o sobrescreva novamente). Esta ação não pode ser desfeita.');">
+                <button type="submit" class="btn btn-sm btn-danger-outline" title="Apagar todo o histórico">
+                    <i data-lucide="trash-2" style="width: 14px;"></i> Resetar Extrato
+                </button>
+            </form>
+            <% } %>
+        </div>
+        <div class="card-body">
+            <% if (ledgers.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ledgers.forEach(l => { %>
+                            <tr>
+                                <td><%= new Date(l.date).toLocaleDateString('pt-BR') %></td>
+                                <td>
+                                    <strong><%= l.description %></strong>
+                                    <% if (l.subscription_id) { %>
+                                        <span class="badge badge-outline" style="font-size: 10px; padding: 2px 6px;">Assinatura</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (l.type === 'income') { %>
+                                        <span class="badge badge-success">Entrada</span>
+                                    <% } else { %>
+                                        <span class="badge badge-danger">Saída</span>
+                                    <% } %>
+                                </td>
+                                <td class="<%= l.type === 'income' ? 'text-success' : 'text-danger' %>">
+                                    <%= l.type === 'income' ? '+' : '-' %> R$ <%= l.amount.toFixed(2) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p class="text-muted text-center py-4">Nenhuma movimentação exclusiva do caixa da empresa.</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/tail') %>

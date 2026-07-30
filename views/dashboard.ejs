@@ -1,0 +1,157 @@
+<%- include('partials/head') %>
+
+<!-- 1. VISÃO GERAL -->
+<div class="section-block">
+    <div class="section-label">
+        <span class="section-dot dot-green"></span>
+        Visão Geral do Negócio
+    </div>
+    <div class="dashboard-grid dashboard-grid-3">
+        <div class="kpi-card kpi-income">
+            <div class="kpi-icon">
+                <i data-lucide="arrow-up-right"></i>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-label">Faturamento Bruto</span>
+                <span class="kpi-value">R$ <%= faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-expense">
+            <div class="kpi-icon">
+                <i data-lucide="arrow-down-left"></i>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-label">Custos Operacionais</span>
+                <span class="kpi-value">R$ <%= custosGerais.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+                <% if (expensePercent > 0) { %>
+                    <span class="kpi-sub"><%= expensePercent %>% do faturamento</span>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-profit">
+            <div class="kpi-icon kpi-icon-primary">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-label">Lucro Líquido a Dividir</span>
+                <span class="kpi-value text-glow">R$ <%= lucroADividir.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. DIVISÃO SOCIETÁRIA -->
+<div class="section-block">
+    <div class="section-label">
+        <span class="section-dot dot-blue"></span>
+        Divisão Societária — baseado no Lucro Líquido
+    </div>
+    <div class="dashboard-grid dashboard-grid-2">
+        <div class="kpi-card partner-card">
+            <div class="partner-avatar">O</div>
+            <div class="kpi-body">
+                <span class="kpi-label">Parte do Ortiz (<%= settings.ortiz_pct %>%)</span>
+                <span class="kpi-value">R$ <%= ortizShare.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+            </div>
+        </div>
+
+        <div class="kpi-card partner-card">
+            <div class="partner-avatar">D</div>
+            <div class="kpi-body">
+                <span class="kpi-label">Parte do Davi (<%= settings.davi_pct %>%)</span>
+                <span class="kpi-value">R$ <%= daviShare.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. CAIXA DA EMPRESA -->
+<div class="section-block">
+    <div class="section-label">
+        <span class="section-dot dot-red"></span>
+        Caixa da Empresa (<%= settings.company_pct %>% do Lucro)
+    </div>
+    <div class="dashboard-grid dashboard-grid-2">
+        <div class="kpi-card kpi-expense">
+            <div class="kpi-icon">
+                <i data-lucide="wrench"></i>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-label">Gastos em Ferramentas / Retiradas</span>
+                <span class="kpi-value">- R$ <%= companyFerramentas.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %></span>
+                <% if (companyAportes > 0) { %>
+                    <span class="kpi-sub text-success">+ R$ <%= companyAportes.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %> em aportes</span>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-company <%= companyRealBalance >= 0 ? '' : 'kpi-negative' %>">
+            <div class="kpi-icon kpi-icon-primary">
+                <i data-lucide="building-2"></i>
+            </div>
+            <div class="kpi-body">
+                <span class="kpi-label">Saldo Real da Empresa</span>
+                <span class="kpi-value <%= companyRealBalance >= 0 ? 'text-primary' : 'text-danger' %>">
+                    R$ <%= companyRealBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %>
+                </span>
+                <a href="/company" class="kpi-link">Gerenciar caixa e ferramentas →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. ÚLTIMAS TRANSAÇÕES -->
+<div class="section-block">
+    <div class="card glass-card">
+        <div class="card-header flex-between">
+            <div class="section-label" style="margin-bottom:0;">
+                <span class="section-dot dot-purple"></span>
+                Últimas Transações
+            </div>
+            <a href="/transactions" class="btn btn-sm btn-outline">Ver todas</a>
+        </div>
+        <div class="card-body">
+            <% if (recentTransactions.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Por</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentTransactions.forEach(t => { %>
+                            <tr>
+                                <td class="text-muted"><%= new Date(t.date).toLocaleDateString('pt-BR') %></td>
+                                <td><strong><%= t.description %></strong></td>
+                                <td><span class="badge badge-outline"><%= t.user_name %></span></td>
+                                <td>
+                                    <% if (t.type === 'income') { %>
+                                        <span class="badge badge-success">Entrada</span>
+                                    <% } else { %>
+                                        <span class="badge badge-danger">Saída</span>
+                                    <% } %>
+                                </td>
+                                <td class="<%= t.type === 'income' ? 'text-success' : 'text-danger' %>" style="font-weight: 600;">
+                                    <%= t.type === 'income' ? '+' : '-' %> R$ <%= t.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="empty-state">
+                    <i data-lucide="inbox"></i>
+                    <p>Nenhuma transação registrada ainda.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/tail') %>

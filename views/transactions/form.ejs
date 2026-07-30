@@ -1,0 +1,67 @@
+<%- include('../partials/head') %>
+
+<div class="card glass-card max-w-2xl mx-auto">
+    <div class="card-header">
+        <h2><%= transaction ? 'Editar Transação' : 'Nova Transação' %></h2>
+        <p class="text-muted"><%= transaction ? 'Atualize os dados desta movimentação.' : 'Registre uma nova entrada ou saída no caixa.' %></p>
+    </div>
+    <div class="card-body">
+        <form action="<%= transaction ? '/transactions/' + transaction.id + '/edit' : '/transactions' %>" method="POST" class="std-form">
+            
+            <div class="form-group">
+                <label for="description">Descrição</label>
+                <input type="text" id="description" name="description" required 
+                       placeholder="Ex: Pagamento de Fornecedor, Mensalidade SaaS" 
+                       value="<%= transaction ? transaction.description : '' %>">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group half-width">
+                    <label for="amount">Valor (R$)</label>
+                    <input type="number" id="amount" name="amount" step="0.01" min="0.01" required 
+                           placeholder="0,00" 
+                           value="<%= transaction ? transaction.amount : '' %>">
+                </div>
+
+                <div class="form-group half-width">
+                    <label for="date">Data da Transação</label>
+                    <input type="date" id="date" name="date" required 
+                           value="<%= transaction ? transaction.date : new Date().toISOString().split('T')[0] %>">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Movimentação</label>
+                <div class="radio-group">
+                    <label class="radio-card income-radio">
+                        <input type="radio" name="type" value="income" required 
+                               <%= transaction && transaction.type === 'income' ? 'checked' : (!transaction ? 'checked' : '') %>>
+                        <div class="radio-content">
+                            <i data-lucide="arrow-up-right"></i>
+                            <span>Entrada</span>
+                        </div>
+                    </label>
+
+                    <label class="radio-card expense-radio">
+                        <input type="radio" name="type" value="expense" required 
+                               <%= transaction && transaction.type === 'expense' ? 'checked' : '' %>>
+                        <div class="radio-content">
+                            <i data-lucide="arrow-down-right"></i>
+                            <span>Saída</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions mt-6">
+                <a href="/transactions" class="btn btn-outline">Cancelar</a>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> 
+                    <%= transaction ? 'Atualizar Transação' : 'Salvar Transação' %>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('../partials/tail') %>

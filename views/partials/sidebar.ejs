@@ -1,0 +1,56 @@
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <i data-lucide="wallet" class="brand-icon"></i>
+        <h2>MoneyFinance</h2>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/transactions" class="nav-link">
+                    <i data-lucide="arrow-left-right"></i>
+                    <span>Transações (Gerais)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/company" class="nav-link">
+                    <i data-lucide="building"></i>
+                    <span>Caixa da Empresa</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/settings" class="nav-link">
+                    <i data-lucide="settings"></i>
+                    <span>Configurações (% Divisão)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/calculator" class="nav-link">
+                    <i data-lucide="percent"></i>
+                    <span>Calculadora de %</span>
+                </a>
+            </li>
+            <% if (user.role === 'admin') { %>
+            <li class="nav-item">
+                <a href="/users" class="nav-link">
+                    <i data-lucide="users"></i>
+                    <span>Acessos (Admin)</span>
+                </a>
+            </li>
+            <% } %>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="/logout" class="nav-link text-danger">
+            <i data-lucide="log-out"></i>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>
