@@ -4,15 +4,20 @@ const { ensureAuthenticated } = require('../middleware/auth');
 const router = express.Router();
 
 router.get('/', ensureAuthenticated, (req, res) => {
-  try {
-    // 1. Faturamento e Custos Gerais
-    const incomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income'");
-    const expenseStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'expense'");
-    const faturamento = incomeStmt.get().total;
-    const custosGerais = expenseStmt.get().total;
+    // Helper para pegar a data atual de São Paulo (UTC-3)
+    const d = new Date();
+    const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    const spDate = new Date(utc + (3600000 * -3));
+    const todayStr = spDate.toISOString().split('T')[0];
+
+    // 1. Faturamento e Custos Gerais (Contabilizando apenas a partir de 30/07/2026)
+    const startDate = '2026-07-30';
+    const incomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income' AND date >= ?");
+    const expenseStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'expense' AND date >= ?");
+    const faturamento = incomeStmt.get(startDate).total;
+    const custosGerais = expenseStmt.get(startDate).total;
     
-    // Faturamento de Hoje (Webhook e Manual)
-    const todayStr = new Date().toISOString().split('T')[0];
+    // Faturamento de Hoje (SP timezone)
     const todayIncomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income' AND date = ?");
     const faturamentoHoje = todayIncomeStmt.get(todayStr).total;
     

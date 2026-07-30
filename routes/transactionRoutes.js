@@ -28,11 +28,21 @@ router.get('/new', (req, res) => {
 });
 
 // Create transaction
-router.post('/', (req, res) => {
-  const { description, amount, type, date } = req.body;
+router.post('/add', ensureAuthenticated, (req, res) => {
   try {
-    const stmt = db.prepare('INSERT INTO transactions (description, amount, type, date, user_id) VALUES (?, ?, ?, ?, ?)');
-    stmt.run(description, parseFloat(amount), type, date, req.session.userId);
+    const { description, type, amount, date } = req.body;
+    
+    let targetDate = date;
+    if (!targetDate) {
+        const d = new Date();
+        const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        const spDate = new Date(utc + (3600000 * -3));
+        targetDate = spDate.toISOString().split('T')[0];
+    }
+    
+    const stmt = db.prepare('INSERT INTO transactions (description, type, amount, date, user_id) VALUES (?, ?, ?, ?, ?)');
+    stmt.run(description, type, parseFloat(amount), targetDate, req.session.user.id);
+
     req.session.success = 'Transação registrada com sucesso!';
     res.redirect('/transactions');
   } catch (err) {

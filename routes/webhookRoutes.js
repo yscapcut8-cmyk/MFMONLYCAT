@@ -60,7 +60,11 @@ router.post('/', (req, res) => {
             return res.status(200).send('OK, mas sem valor detectado.');
         }
 
-        const dateStr = new Date().toISOString().split('T')[0];
+        // Pega a data de São Paulo (UTC-3)
+        const d = new Date();
+        const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        const spDate = new Date(utc + (3600000 * -3));
+        const dateStr = spDate.toISOString().split('T')[0];
 
         // Insert into transactions (this will increase the total revenue automatically)
         const stmt = db.prepare(`
