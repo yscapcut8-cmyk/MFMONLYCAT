@@ -68,7 +68,7 @@ router.post('/', (req, res) => {
         // Insert into transactions (this will increase the total revenue automatically)
         const stmt = db.prepare(`
             INSERT INTO transactions (description, type, amount, date, user_id)
-            VALUES (?, 'income', ?, ?, NULL)
+            VALUES (?, 'webhook_income', ?, ?, NULL)
         `);
         
         stmt.run(description, amount, dateStr);

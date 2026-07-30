@@ -11,23 +11,25 @@ router.get('/', ensureAuthenticated, (req, res) => {
     const spDate = new Date(utc + (3600000 * -3));
     const todayStr = spDate.toISOString().split('T')[0];
 
-    // 1. Faturamento e Custos Gerais (Contabilizando apenas a partir de 30/07/2026)
+    // 1. Faturamento Manual e Custos (Afeta a divisão de lucro)
     const startDate = '2026-07-30';
     const incomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income' AND date >= ?");
     const expenseStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'expense' AND date >= ?");
-    const faturamento = incomeStmt.get(startDate).total;
+    const faturamentoManual = incomeStmt.get(startDate).total;
     const custosGerais = expenseStmt.get(startDate).total;
     
-    // Faturamento de Hoje (SP timezone)
-    const todayIncomeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'income' AND date = ?");
-    const faturamentoHoje = todayIncomeStmt.get(todayStr).total;
+    // Faturamento Automático via Webhook (Não afeta divisão)
+    const webhookTotalStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'webhook_income' AND date >= ?");
+    const webhookHojeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'webhook_income' AND date = ?");
+    const faturamentoTotal = webhookTotalStmt.get(startDate).total;
+    const faturamentoHoje = webhookHojeStmt.get(todayStr).total;
     
     // Buscar configurações de porcentagem
     const settingsStmt = db.prepare('SELECT * FROM settings WHERE id = 1');
     const settings = settingsStmt.get();
 
     // 2. Lucro a Dividir
-    let lucroADividir = faturamento - custosGerais;
+    let lucroADividir = faturamentoManual - custosGerais;
     if (lucroADividir < 0) lucroADividir = 0; // Evitar divisão negativa
 
     // 3. Divisão das Porcentagens (Baseado no Lucro a Dividir)
@@ -44,10 +46,10 @@ router.get('/', ensureAuthenticated, (req, res) => {
     // 5. Saldo Real da Empresa
     const companyRealBalance = companyTheoretical + companyAportes - companyFerramentas;
 
-    // Cálculo da porcentagem dos custos gerais em relação ao faturamento
+    // Cálculo da porcentagem dos custos gerais em relação ao faturamento manual
     let expensePercent = 0;
-    if (faturamento > 0) {
-      expensePercent = Math.round((custosGerais / faturamento) * 100);
+    if (faturamentoManual > 0) {
+      expensePercent = Math.round((custosGerais / faturamentoManual) * 100);
     }
 
     const recentStmt = db.prepare(`
@@ -60,7 +62,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
 
     res.render('dashboard', {
       title: 'Dashboard - MoneyFinance',
-      faturamento,
+      faturamento: faturamentoTotal,
+      faturamentoManual,
       faturamentoHoje,
       custosGerais,
       lucroADividir,
