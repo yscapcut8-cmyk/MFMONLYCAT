@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title : 'MoneyFinance' %></title>
     <meta name="description" content="MoneyFinance — Gestão financeira para sócios">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -40,6 +39,21 @@
         <% } %>
 
         <div class="content-wrapper">
+            <!-- Global Notifications -->
+            <% if (typeof upcomingRenewals !== 'undefined' && upcomingRenewals.length > 0) { %>
+                <div class="alert alert-warning" style="margin-bottom: var(--sp-6);">
+                    <i data-lucide="alert-triangle"></i>
+                    <div>
+                        <strong>Aviso de Vencimento:</strong>
+                        <% if (upcomingRenewals.length === 1) { %>
+                            A ferramenta <b><%= upcomingRenewals[0].name %></b> vence no dia <%= new Date(upcomingRenewals[0].renewal_date).toLocaleDateString('pt-BR') %> (R$ <%= upcomingRenewals[0].amount.toFixed(2) %>).
+                        <% } else { %>
+                            Existem <%= upcomingRenewals.length %> ferramentas vencendo nos próximos 7 dias.
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+
             <% if (typeof error !== 'undefined' && error) { %>
                 <div class="alert alert-error">
                     <i data-lucide="alert-circle"></i>

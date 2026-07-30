@@ -35,6 +35,7 @@ function initDb() {
       name TEXT NOT NULL,
       amount REAL NOT NULL,
       status TEXT NOT NULL DEFAULT 'active',
+      renewal_date DATE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -55,12 +56,12 @@ function initDb() {
   // Migration for adding status column to existing db
   try {
     db.exec("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'pending'");
-    // Since this is executed, it means we just added the column to an existing db
-    // Let's set existing users to 'approved' to avoid locking out existing ones, or just the admin.
     db.exec("UPDATE users SET status = 'approved'");
-  } catch (e) {
-    // Column already exists, ignore
-  }
+  } catch (e) { }
+
+  try {
+    db.exec("ALTER TABLE subscriptions ADD COLUMN renewal_date DATE");
+  } catch (e) { }
 
   // Ensure admin is always approved
   db.exec("UPDATE users SET status = 'approved' WHERE role = 'admin' OR email = 'yscapcut8@gmail.com'");

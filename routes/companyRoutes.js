@@ -106,10 +106,10 @@ router.post('/ledger', (req, res) => {
 
 // 3. Criar Assinatura e Debitar
 router.post('/subscriptions', (req, res) => {
-  const { name, amount, date } = req.body;
+  const { name, amount, date, renewal_date } = req.body;
   try {
-    const stmt = db.prepare('INSERT INTO subscriptions (name, amount) VALUES (?, ?)');
-    const info = stmt.run(name, parseFloat(amount));
+    const stmt = db.prepare('INSERT INTO subscriptions (name, amount, renewal_date) VALUES (?, ?, ?)');
+    const info = stmt.run(name, parseFloat(amount), renewal_date || null);
     
     // Já debita o primeiro mês agora mesmo usando a data fornecida
     const ledgerStmt = db.prepare('INSERT INTO company_ledger (description, amount, type, date, subscription_id) VALUES (?, ?, ?, ?, ?)');

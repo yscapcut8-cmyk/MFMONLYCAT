@@ -33,6 +33,24 @@ app.use((req, res, next) => {
   res.locals.success = req.session.success || null;
   delete req.session.error;
   delete req.session.success;
+  
+  // Upcoming renewals
+  res.locals.upcomingRenewals = [];
+  if (req.session.user) {
+    try {
+      const db = require('./database/connection');
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      const nextWeekStr = nextWeek.toISOString().split('T')[0];
+      
+      const stmt = db.prepare("SELECT * FROM subscriptions WHERE status = 'active' AND renewal_date IS NOT NULL AND renewal_date BETWEEN ? AND ? ORDER BY renewal_date ASC");
+      res.locals.upcomingRenewals = stmt.all(today, nextWeekStr);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   next();
 });
 

@@ -321,7 +321,13 @@ h1,h2,h3,h4,h5,h6 { color: var(--text-light); font-weight: 600; line-height: 1.3
 }
 .sidebar-overlay.active { display: block; }
 
-.content-wrapper { padding: var(--sp-8); flex: 1; }
+.content-wrapper { 
+    padding: var(--sp-8); 
+    flex: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+}
 
 /* ==========================================================================
    Dashboard KPI Cards
