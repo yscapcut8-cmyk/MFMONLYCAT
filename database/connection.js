@@ -1,5 +1,6 @@
 const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
+const fs = require('fs');
 
 // Priority: DB_PATH env var (Railway volume) → /tmp (Vercel) → local project root
 function getDbPath() {
@@ -10,6 +11,10 @@ function getDbPath() {
 
 const dbPath = getDbPath();
 console.log('Database path:', dbPath);
+
+// Ensure the directory exists (required for Railway volumes)
+const dbDir = path.dirname(dbPath);
+fs.mkdirSync(dbDir, { recursive: true });
 
 // Create or open the database
 const db = new DatabaseSync(dbPath);
