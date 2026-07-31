@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const db = require('../database/connection');
+const webpush = require('web-push');
 
 // We need the raw body to verify the HMAC signature correctly
 const router = express.Router();
@@ -74,6 +75,50 @@ router.post('/', (req, res) => {
         stmt.run(description, amount, dateStr);
 
         console.log(`Venda de R$ ${amount} registrada com sucesso!`);
+        
+        // Enviar Push Notifications
+        if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+            webpush.setVapidDetails(
+                'mailto:yscapcut8@gmail.com', // or any valid email
+                process.env.VAPID_PUBLIC_KEY,
+                process.env.VAPID_PRIVATE_KEY
+            );
+
+            try {
+                const subsStmt = db.prepare('SELECT * FROM push_subscriptions');
+                const subscriptions = subsStmt.all();
+                
+                const notificationPayload = JSON.stringify({
+                    title: 'Nova Venda! 🦈',
+                    body: `Você recebeu R$ ${amount.toFixed(2).replace('.', ',')}`,
+                    url: '/transactions'
+                });
+
+                subscriptions.forEach(sub => {
+                    const pushSubscription = {
+                        endpoint: sub.endpoint,
+                        keys: {
+                            p256dh: sub.p256dh,
+                            auth: sub.auth
+                        }
+                    };
+                    
+                    webpush.sendNotification(pushSubscription, notificationPayload)
+                        .catch(err => {
+                            if (err.statusCode === 410 || err.statusCode === 404) {
+                                // Subscription has expired or is no longer valid
+                                console.log('Subscription expired. Deleting from DB:', sub.endpoint);
+                                db.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').run(sub.endpoint);
+                            } else {
+                                console.error('Error sending push notification:', err);
+                            }
+                        });
+                });
+            } catch (pushErr) {
+                console.error('Failed to send push notifications:', pushErr);
+            }
+        }
+
         res.status(200).send('Webhook processado com sucesso');
 
     } catch (error) {

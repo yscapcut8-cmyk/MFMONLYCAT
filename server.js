@@ -69,6 +69,7 @@ app.use('/transactions', require('./routes/transactionRoutes'));
 app.use('/settings', require('./routes/settingsRoutes'));
 app.use('/company', require('./routes/companyRoutes'));
 app.use('/users', require('./routes/userRoutes'));
+app.use('/api/push', require('./routes/pushRoutes'));
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);

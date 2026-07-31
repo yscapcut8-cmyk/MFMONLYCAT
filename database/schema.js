@@ -50,6 +50,14 @@ function initDb() {
       FOREIGN KEY (subscription_id) REFERENCES subscriptions (id)
     );
     
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      endpoint TEXT UNIQUE NOT NULL,
+      p256dh TEXT NOT NULL,
+      auth TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    
     INSERT OR IGNORE INTO settings (id, company_pct, ortiz_pct, davi_pct) VALUES (1, 10, 45, 45);
   `);
   
