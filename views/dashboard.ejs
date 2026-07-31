@@ -21,9 +21,18 @@
             <div class="kpi-icon" style="background: rgba(59,130,246,0.1); color: var(--info);">
                 <i data-lucide="activity"></i>
             </div>
-            <div class="kpi-body">
-                <span class="kpi-label">Faturamento Hoje</span>
-                <span class="kpi-value">R$ <%= typeof faturamentoHoje !== 'undefined' ? faturamentoHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></span>
+            <div class="kpi-body" style="position: relative; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span class="kpi-label" id="webhook-label">Faturamento Hoje</span>
+                    <select id="webhook-period" onchange="updateWebhookMetrics()" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); border-radius: 4px; font-size: 0.75rem; padding: 2px 5px; outline: none; cursor: pointer;">
+                        <option value="hoje" style="background: #111;">Hoje</option>
+                        <option value="ontem" style="background: #111;">Ontem</option>
+                        <option value="7dias" style="background: #111;">7 Dias</option>
+                        <option value="30dias" style="background: #111;">30 Dias</option>
+                        <option value="total" style="background: #111;">Total</option>
+                    </select>
+                </div>
+                <span class="kpi-value" id="webhook-value">R$ <%= typeof faturamentoHoje !== 'undefined' ? faturamentoHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00' %></span>
                 <span class="kpi-sub text-info" style="font-size: 0.7rem;">Automático via Webhook</span>
             </div>
         </div>
@@ -164,5 +173,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    const webhookData = {
+        'hoje': { label: 'Faturamento Hoje', value: <%= typeof faturamentoHoje !== 'undefined' ? faturamentoHoje : 0 %> },
+        'ontem': { label: 'Faturamento Ontem', value: <%= typeof faturamentoOntem !== 'undefined' ? faturamentoOntem : 0 %> },
+        '7dias': { label: 'Faturamento 7 Dias', value: <%= typeof faturamento7Dias !== 'undefined' ? faturamento7Dias : 0 %> },
+        '30dias': { label: 'Faturamento 30 Dias', value: <%= typeof faturamento30Dias !== 'undefined' ? faturamento30Dias : 0 %> },
+        'total': { label: 'Faturamento Total (Automático)', value: <%= typeof faturamento !== 'undefined' ? faturamento : 0 %> }
+    };
+
+    function updateWebhookMetrics() {
+        const period = document.getElementById('webhook-period').value;
+        const data = webhookData[period];
+        document.getElementById('webhook-label').innerText = data.label;
+        document.getElementById('webhook-value').innerText = 'R$ ' + data.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+</script>
 
 <%- include('partials/tail') %>

@@ -5,11 +5,20 @@ const router = express.Router();
 
 router.get('/', ensureAuthenticated, (req, res) => {
   try {
-    // Helper para pegar a data atual de São Paulo (UTC-3)
+    // Helper para pegar a data atual e passadas de São Paulo (UTC-3)
     const d = new Date();
     const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
     const spDate = new Date(utc + (3600000 * -3));
     const todayStr = spDate.toISOString().split('T')[0];
+    
+    const yesterdayDate = new Date(spDate.getTime() - 86400000);
+    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+    
+    const days7AgoDate = new Date(spDate.getTime() - (86400000 * 7));
+    const days7AgoStr = days7AgoDate.toISOString().split('T')[0];
+    
+    const days30AgoDate = new Date(spDate.getTime() - (86400000 * 30));
+    const days30AgoStr = days30AgoDate.toISOString().split('T')[0];
 
     // 1. Faturamento Manual e Custos (Afeta a divisão de lucro)
     const startDate = '2026-07-30';
@@ -21,8 +30,13 @@ router.get('/', ensureAuthenticated, (req, res) => {
     // Faturamento Automático via Webhook (Não afeta divisão)
     const webhookTotalStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'webhook_income' AND date >= ?");
     const webhookHojeStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'webhook_income' AND date = ?");
+    const webhookPeriodStmt = db.prepare("SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE type = 'webhook_income' AND date >= ?");
+    
     const faturamentoTotal = webhookTotalStmt.get(startDate).total;
     const faturamentoHoje = webhookHojeStmt.get(todayStr).total;
+    const faturamentoOntem = webhookHojeStmt.get(yesterdayStr).total;
+    const faturamento7Dias = webhookPeriodStmt.get(days7AgoStr).total;
+    const faturamento30Dias = webhookPeriodStmt.get(days30AgoStr).total;
     
     // Buscar configurações de porcentagem
     const settingsStmt = db.prepare('SELECT * FROM settings WHERE id = 1');
@@ -65,6 +79,9 @@ router.get('/', ensureAuthenticated, (req, res) => {
       faturamento: faturamentoTotal,
       faturamentoManual,
       faturamentoHoje,
+      faturamentoOntem,
+      faturamento7Dias,
+      faturamento30Dias,
       custosGerais,
       lucroADividir,
       ortizShare,
