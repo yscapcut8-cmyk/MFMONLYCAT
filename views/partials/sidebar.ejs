@@ -31,7 +31,13 @@
 
             <div class="nav-section-label" style="margin-top: var(--sp-4);">Configurações</div>
             <li class="nav-item">
-                <a href="/settings" class="nav-link <%= typeof title !== 'undefined' && title.includes('Configura') ? 'active' : '' %>">
+                <a href="/users/profile" class="nav-link <%= typeof title !== 'undefined' && title.includes('Perfil') ? 'active' : '' %>">
+                    <i data-lucide="user-cog"></i>
+                    <span>Meu Perfil</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/settings" class="nav-link <%= typeof title !== 'undefined' && title.includes('Configura') && !title.includes('Perfil') ? 'active' : '' %>">
                     <i data-lucide="sliders-horizontal"></i>
                     <span>Divisão de %</span>
                 </a>

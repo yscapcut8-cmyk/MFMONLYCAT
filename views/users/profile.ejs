@@ -1,0 +1,138 @@
+<%- include('../partials/head') %>
+
+<div class="card glass-card max-w-2xl mx-auto">
+    <div class="card-header">
+        <h2>Meu Perfil</h2>
+        <p class="text-muted">Atualize suas informações pessoais e credenciais de acesso.</p>
+    </div>
+    <div class="card-body">
+        <form action="/users/profile" method="POST" class="std-form">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #fff;">Dados Pessoais</h3>
+            
+            <div class="form-group">
+                <label for="name">Nome</label>
+                <div class="input-with-icon">
+                    <i data-lucide="user"></i>
+                    <input type="text" id="name" name="name" required value="<%= user.name %>">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-with-icon">
+                    <i data-lucide="mail"></i>
+                    <input type="email" id="email" name="email" required value="<%= user.email %>">
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0;">
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #fff;">Alterar Senha</h3>
+            <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.9rem;">Preencha apenas se desejar trocar sua senha atual.</p>
+
+            <div class="form-group">
+                <label for="current_password">Senha Atual</label>
+                <div class="input-with-icon">
+                    <i data-lucide="lock"></i>
+                    <input type="password" id="current_password" name="current_password" placeholder="Sua senha atual">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="new_password">Nova Senha</label>
+                <div class="input-with-icon">
+                    <i data-lucide="key"></i>
+                    <input type="password" id="new_password" name="new_password" placeholder="Sua nova senha">
+                </div>
+            </div>
+
+            <div class="form-actions mt-6">
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="save"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Card de Push Notifications Movido para cá -->
+<div class="card glass-card max-w-2xl mx-auto mt-6">
+    <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;">
+                <i data-lucide="bell" style="width: 24px; height: 24px; color: #fff;"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #fff; font-weight: 500;">Notificações Push</h3>
+                <p class="text-muted" style="margin: 0; font-size: 0.9rem;">Ative para receber alertas de vendas</p>
+            </div>
+        </div>
+        <div>
+            <label class="switch">
+                <input type="checkbox" id="pushToggle" disabled>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.VAPID_PUBLIC_KEY = "<%= typeof process !== 'undefined' && process.env.VAPID_PUBLIC_KEY ? process.env.VAPID_PUBLIC_KEY : '' %>";
+</script>
+<script src="/js/push.js"></script>
+
+<style>
+/* CSS for the switch toggle */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #8b5cf6; 
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #8b5cf6;
+}
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+input:disabled + .slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+</style>
+
+<%- include('../partials/tail') %>

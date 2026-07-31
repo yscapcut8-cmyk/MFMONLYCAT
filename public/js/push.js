@@ -41,6 +41,7 @@ async function initPushSettings() {
         }
 
         pushToggle.checked = isSubscribed;
+        pushToggle.disabled = false; // Enable only if SW works
 
         pushToggle.addEventListener('change', async (e) => {
             pushToggle.disabled = true;
@@ -53,13 +54,22 @@ async function initPushSettings() {
             } catch (err) {
                 console.error('Erro na configuração de push', err);
                 pushToggle.checked = !pushToggle.checked; // Revert visually
-                alert('Erro ao configurar notificações: ' + err.message);
+                
+                // Melhorando as mensagens de erro
+                if (err.message.includes('permission')) {
+                    alert('Permissão negada! Você precisa permitir as notificações nas configurações do navegador/celular.');
+                } else if (err.message.includes('VAPID')) {
+                    alert('Erro no servidor: Chaves de segurança não configuradas. Contate o administrador.');
+                } else {
+                    alert('Erro ao configurar notificações: ' + err.message);
+                }
             } finally {
                 pushToggle.disabled = false;
             }
         });
     } catch (error) {
         console.error('Service Worker Error', error);
+        alert('Seu dispositivo não suporta notificações deste site. No iPhone, adicione o site à "Tela de Início" primeiro.');
     }
 }
 
